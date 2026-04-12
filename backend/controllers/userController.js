@@ -9,7 +9,7 @@ const generateToken = (userId) => {
 
 export const registerUser = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { name, email, password } = req.body;
     
     // Check if user already exists
     const userExist = await User.findOne({ email });
@@ -31,7 +31,7 @@ export const registerUser = async (req, res) => {
     
     // Create user
     const user = await User.create({ 
-      fullName, 
+      fullName: name, 
       email, 
       password: hashedPassword 
     });

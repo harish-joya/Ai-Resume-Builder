@@ -17,3 +17,8 @@ npm-debug.log*
 
 # OS files
 .DS_Store
+
+node_modules/
+.env
+dist/
+build/
