@@ -1,51 +1,58 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-
-import { connect_db } from "./config/db.js";
-import userRouter from "./routes/userRouter.js";
-import resumeRoutes from "./routes/resumeRoutes.js";
-
 import path from "path";
 import { fileURLToPath } from "url";
+
+// ROUTES
+import userRouter from "./routes/userRouter.js";
+import resumeRoutes from "./routes/resumeRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
+
+// DB
+import { connect_db } from "./config/db.js";
 
 dotenv.config();
 
 const app = express();
 
-// Fix __dirname (ES module)
+// Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// MIDDLEWARE
+// ================= MIDDLEWARE =================
+
+// CORS
 app.use(cors({
-  origin: "*",
+  origin: "*", // you can restrict later
 }));
+
+// Body parser
 app.use(express.json());
 
-//  CONNECT DATABASE (RESTORED)
+// ================= DATABASE =================
 connect_db();
+
+// ================= ROUTES =================
 
 app.use("/api/auth", userRouter);
 app.use("/api/resumes", resumeRoutes);
-
-import aiRoutes from "./routes/aiRoutes.js";
 app.use("/api/ai", aiRoutes);
 
-//  STATIC UPLOADS (RESTORED)
+// ================= STATIC FILES =================
 app.use(
   "/uploads",
   express.static(path.join(__dirname, "uploads"), {
     setHeaders: (res) => {
       res.set("Access-Control-Allow-Origin", "*");
     },
-  }),
+  })
 );
 
-
+// ================= AI ROUTE =================
 app.post("/generate-summary", async (req, res) => {
   try {
-    console.log(" API HIT");
+    console.log("API HIT");
 
     const { prompt } = req.body;
 
@@ -87,24 +94,26 @@ app.post("/generate-summary", async (req, res) => {
     res.json({ success: true, data: parsed });
 
   } catch (error) {
-    console.error(" AI ERROR:", error);
+    console.error("AI ERROR:", error);
     res.status(500).json({ success: false });
   }
 });
 
-// TEST ROUTE
+// ================= TEST ROUTE =================
 app.get("/test-ai", (req, res) => {
   console.log("TEST HIT");
   res.send("AI route working");
 });
 
-// PORT
-const PORT = process.env.PORT || 40000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
+// ================= GLOBAL ERROR HANDLER =================
 app.use((err, req, res, next) => {
   console.error("💥 GLOBAL ERROR:", err);
   res.status(500).json({ error: err.message });
+});
+
+// ================= SERVER START =================
+const PORT = process.env.PORT || 40000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
