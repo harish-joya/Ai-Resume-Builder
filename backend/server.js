@@ -116,4 +116,12 @@ const PORT = process.env.PORT || 40000;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log("🚀 Starting server...");
+
+try {
+  connect_db();
+  console.log("✅ DB connection function called");
+} catch (error) {
+  console.error("❌ DB ERROR:", error);
+}
 });
