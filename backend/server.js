@@ -21,25 +21,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ================= MIDDLEWARE =================
-
-// CORS
 app.use(cors({
-  origin: "*", // you can restrict later
+  origin: "*",
 }));
 
-// Body parser
 app.use(express.json());
 
-// ================= DATABASE =================
-connect_db();
-
 // ================= ROUTES =================
-
 app.use("/api/auth", userRouter);
 app.use("/api/resumes", resumeRoutes);
 app.use("/api/ai", aiRoutes);
 
-// ================= STATIC FILES =================
+// ================= STATIC FILES (UPLOADS) =================
 app.use(
   "/uploads",
   express.static(path.join(__dirname, "uploads"), {
@@ -49,60 +42,14 @@ app.use(
   })
 );
 
-// ================= AI ROUTE =================
-app.post("/generate-summary", async (req, res) => {
-  try {
-    console.log("API HIT");
+// ================= SERVE FRONTEND =================
+// IMPORTANT: Make sure dist folder exists inside backend
 
-    const { prompt } = req.body;
+app.use(express.static(path.join(__dirname, "dist")));
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: prompt }],
-            },
-          ],
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-    const cleanText = text
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
-
-    let parsed;
-
-    try {
-      parsed = JSON.parse(cleanText);
-    } catch {
-      parsed = [{ experience_level: "AI", summary: cleanText }];
-    }
-
-    res.json({ success: true, data: parsed });
-
-  } catch (error) {
-    console.error("AI ERROR:", error);
-    res.status(500).json({ success: false });
-  }
-});
-
-// ================= TEST ROUTE =================
-app.get("/test-ai", (req, res) => {
-  console.log("TEST HIT");
-  res.send("AI route working");
+// React Router support (VERY IMPORTANT)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 // ================= GLOBAL ERROR HANDLER =================
@@ -111,17 +58,24 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
-// ================= SERVER START =================
-const PORT = process.env.PORT || 40000;
+// ================= START SERVER =================
+const startServer = async () => {
+  try {
+    console.log("🚀 Starting server...");
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log("🚀 Starting server...");
+    await connect_db();
+    console.log("✅ Database connected successfully!");
 
-try {
-  connect_db();
-  console.log("✅ DB connection function called");
-} catch (error) {
-  console.error("❌ DB ERROR:", error);
-}
-});
+    const PORT = process.env.PORT || 40000;
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("💥 SERVER START ERROR:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

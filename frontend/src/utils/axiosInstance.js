@@ -2,7 +2,7 @@ import axios from "axios";
 import { BASE_URL } from "./apiPaths";
 
 const axiosInstance = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_URL, // 👈 controlled from apiPaths
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
   },
 });
 
-// REQUEST INTERCEPTOR (Attach token automatically)
+// 🔐 REQUEST INTERCEPTOR (Attach token automatically)
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-//  RESPONSE INTERCEPTOR (Handle errors globally)
+// 🌐 RESPONSE INTERCEPTOR (Global error handling)
 axiosInstance.interceptors.response.use(
   (response) => response,
 
@@ -33,7 +33,7 @@ axiosInstance.interceptors.response.use(
       const { status } = error.response;
 
       if (status === 401) {
-        // Unauthorized → logout user
+        // Unauthorized → logout
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "/";

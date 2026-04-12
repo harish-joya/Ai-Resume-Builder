@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:40000";
+export const BASE_URL = "/api";
 
 // ROUTES USED FOR FRONTEND
 
