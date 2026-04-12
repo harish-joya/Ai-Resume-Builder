@@ -108,7 +108,3 @@ app.use((err, req, res, next) => {
   console.error("💥 GLOBAL ERROR:", err);
   res.status(500).json({ error: err.message });
 });
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server Started on http://localhost:${PORT}`);
-});
