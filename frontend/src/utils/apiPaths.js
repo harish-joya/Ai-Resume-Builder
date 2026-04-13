@@ -1,29 +1,31 @@
-export const BASE_URL = "/api";
+const isProduction = import.meta.env.PROD;
 
-// ROUTES USED FOR FRONTEND
+export const BASE_URL = isProduction
+  ? "/api" // Render
+  : "http://localhost:40000/api"; // Local
 
 export const API_PATHS = {
   AUTH: {
-    REGISTER: "/api/auth/register",
-    LOGIN: "/api/auth/login",
-    GET_PROFILE: "/api/auth/profile",
+    REGISTER: "/auth/register",
+    LOGIN: "/auth/login",
+    GET_PROFILE: "/auth/profile",
   },
 
   RESUME: {
-    CREATE: "/api/resumes/",
-    GET_ALL: "/api/resumes",
-    
-    Get_By_Id: (id) => `/api/resumes/${id}`,
-    UPDATE: (id) => `/api/resumes/${id}`,
-    DELETE: (id) => `/api/resumes/${id}`,
-    UPLOAD_IMAGES: (id) => `/api/resumes/${id}/upload-image`,
+    CREATE: "/resumes/",
+    GET_ALL: "/resumes",
+
+    GET_BY_ID: (id) => `/resumes/${id}`,
+    UPDATE: (id) => `/resumes/${id}`,
+    DELETE: (id) => `/resumes/${id}`,
+    UPLOAD_IMAGES: (id) => `/resumes/${id}/upload-image`,
   },
-  
-  image: {
-    UPLOAD_IMAGE: "api/auth/upload-image",
+
+  IMAGE: {
+    UPLOAD_IMAGE: "/auth/upload-image",
   },
 
   AI: {
-    CATEGORIZE_SKILLS: "/api/ai/categorize-skills",
+    CATEGORIZE_SKILLS: "/ai/categorize-skills",
   },
 };
