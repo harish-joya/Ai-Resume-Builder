@@ -11,4 +11,7 @@ router.post('/login', loginUser);
 // Protected route - requires JWT token
 router.get('/profile', protect, getUserProfile);
 
+
+
+
 export default router;

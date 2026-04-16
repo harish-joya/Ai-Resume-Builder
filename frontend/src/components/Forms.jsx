@@ -388,17 +388,12 @@ export const ProfileInfoForm = ({ profileData, updateSection, errors }) => {
       ]
       `;
 
-      const response = await fetch("http://127.0.0.1:40000/generate-summary", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-        }),
-      });
+      const response = await axiosInstance.post(
+        API_PATHS.AI.GENERATE_SUMMARY,
+        { prompt }
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         setAiSuggestions(data.data);
@@ -567,15 +562,12 @@ export const ProjectDetailForm = ({
       ]
       `;
 
-      const response = await fetch("http://127.0.0.1:40000/generate-summary", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
+      const response = await axiosInstance.post(
+        API_PATHS.AI.GENERATE_SUMMARY,
+        { prompt }
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data.success) {
         setAiSuggestions((prev) => ({

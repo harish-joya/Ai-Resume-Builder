@@ -47,8 +47,8 @@ app.use(
 
 app.use(express.static(path.join(__dirname, "dist")));
 
-// React Router support (VERY IMPORTANT)
-app.get(/.*/, (req, res) => {
+// Only handle NON-API routes
+app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 

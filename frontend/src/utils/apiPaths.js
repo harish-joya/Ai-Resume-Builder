@@ -27,5 +27,6 @@ export const API_PATHS = {
 
   AI: {
     CATEGORIZE_SKILLS: "/ai/categorize-skills",
+    GENERATE_SUMMARY: "/ai/generate-summary",
   },
 };

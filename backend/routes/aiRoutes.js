@@ -112,4 +112,66 @@ ${JSON.stringify(skills)}
   }
 });
 
+
+// ================= GENERATE SUMMARY (ADD THIS) =================
+router.post("/generate-summary", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+
+    if (!prompt) {
+      return res.status(400).json({
+        success: false,
+        message: "Prompt is required",
+      });
+    }
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }],
+            },
+          ],
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    const text =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    const cleanText = text
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(cleanText);
+    } catch {
+      parsed = [{ summary: cleanText }];
+    }
+
+    res.json({
+      success: true,
+      data: parsed,
+    });
+
+  } catch (error) {
+    console.error("AI SUMMARY ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Summary generation failed",
+    });
+  }
+});
+
 export default router;
